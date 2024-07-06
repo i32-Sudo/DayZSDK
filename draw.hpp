@@ -539,11 +539,6 @@ void hackthread(ImDrawList* drawList) {
     }
 }
 
-
-
-float currentAlpha = 0.0f;
-const float targetAlpha = 140.0f;
-const float fadeSpeed = 6.0f;
 void DrawOverlay() {
     ImGui::Begin(xorstr_("renderer"), nullptr, ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoInputs );
     ImGui::SetWindowPos(ImVec2(0.0f, 0.0f));
@@ -557,14 +552,6 @@ void DrawOverlay() {
         if (currentAlpha > targetAlpha) {
             currentAlpha = targetAlpha;
         }
-    }
-
-    if (ShowMenu) {
-        overlay::DrawFilledBox2D(drawList, ImVec2(0, 0), ImVec2(screenWidth, screenHeight), ImColor(255, 0, 0, 255), ImColor(0, 0, 0, static_cast<int>(currentAlpha)));
-        overlay::DrawText2D(drawList, ImVec2(0, 30), 13, ImColor(255, 0, 0, 255), xorstr_("PRESS END KEY BEFORE CLOSING GAME TO UNLOAD! RISK OF BSOD!"));
-    }
-    else {
-        currentAlpha = 0.0f;
     }
 
     ImGui::End();
@@ -628,62 +615,6 @@ void RunStyle() {
     style->AntiAliasedFill = true;
 
     StyleLoaded = !StyleLoaded;
-}
-
-
-int tabb = 1;
-void DrawMenu() {
-    /* Overlay Shit */
-    if (!StyleLoaded)
-        RunStyle();
-    if (GetAsyncKeyState(VK_INSERT) & 1) {
-        ShowMenu = !ShowMenu;
-    }
-
-    HWND window = FindWindowW(NULL, xorstr_(L"U"));
-    LONG_PTR exStyle = GetWindowLongPtr(window, GWL_EXSTYLE);
-    if (ShowMenu)
-    {
-        ImGuiIO& io = ImGui::GetIO();
-
-        exStyle &= ~WS_EX_TRANSPARENT;
-
-        bool show_demo_window = false;
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
-
-        /* BG BEHIND */
-        // Begin the ImGui window
-        ImGuiStyle* style = &ImGui::GetStyle();
-
-        /* Menu */
-        ImGui::Begin(xorstr_("i64NtNvda"), nullptr, ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoSavedSettings);
-        style = &ImGui::GetStyle();
-        style->Colors[ImGuiCol_WindowBg] = ImColor(20, 20, 20);
-        ImGui::PushFont(ImGui::GetIO().Fonts->Fonts[1]);
-        // Removed Menu
-        
-        ImGui::End();
-    }
-    else {
-        exStyle |= WS_EX_TRANSPARENT;
-    }
-    SetWindowLongPtr(window, GWL_EXSTYLE, exStyle);
-    SetWindowPos(window, NULL, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED);
-    ImGui::End();
-}
-
-
-bool IsProcessForegroundWindow(DWORD processID) {
-    HWND foregroundWindow = GetForegroundWindow();
-    if (foregroundWindow == NULL) {
-        return false;
-    }
-
-    DWORD foregroundProcessID;
-    GetWindowThreadProcessId(foregroundWindow, &foregroundProcessID);
-
-    return processID == foregroundProcessID;
 }
 
 void drawLoop() {
